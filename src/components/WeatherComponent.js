@@ -23,7 +23,7 @@ export default function WeatherComponent() {
     const fetchWeather = async () => {
         try {
             const response = await axios.get(
-                `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=a9cc850939787ac9c46f5ead0b833616&units=metric`
+                `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=a9cc850939787ac9c46f5ead0b833616&units=metric`
             );
             setWeatherData(response.data);
             console.log(response);
@@ -33,7 +33,7 @@ export default function WeatherComponent() {
     const fetchForecast = async () => {
         try {
             const response = await axios.get(
-                `http://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=a9cc850939787ac9c46f5ead0b833616&units=metric`
+                `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=a9cc850939787ac9c46f5ead0b833616&units=metric`
             );
             setForecastData(response.data.list.slice(0, 20));
             console.log(response);
