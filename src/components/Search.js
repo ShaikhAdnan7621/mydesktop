@@ -31,11 +31,11 @@ function Search() {
     }, [searchEngine]);
 
     const searchEngineImages = {
-        "https://www.google.com/search": "/search_engines/google.png",
-        "https://www.bing.com/search": "/search_engines/bing.png",
-        "https://search.yahoo.com/search": "/search_engines/yahoo.png",
-        "https://duckduckgo.com/": "/search_engines/duckduckgo.png",
-        "https://www.ask.com/web": "/search_engines/ask.png",
+        "https://www.google.com/search": "/search_engines/Google.png",
+        "https://www.bing.com/search": "/search_engines/Bing.png",
+        "https://search.yahoo.com/search": "/search_engines/Yahoo.png",
+        "https://duckduckgo.com/": "/search_engines/DuckDuckGo.png",
+        "https://www.ask.com/web": "/search_engines/Ask.png",
     };
 
     const handleFormSubmit = (event) => {
