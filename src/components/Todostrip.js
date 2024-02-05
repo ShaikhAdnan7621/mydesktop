@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import { useState } from "react";
 
@@ -17,7 +18,7 @@ function Todostrip(props) {
     };
 
     return (
-        <div>
+        <div className="text-black  dark:text-white  ">
             <div className=" relative ">
                 <button
                     className="absolute top-0 right-0 p-0.5 w-9 h-9 border  rounded-full border-gray-800  dark:border-gray-100 text-xl bg-gray-100 dark:bg-gray-800"
@@ -41,7 +42,7 @@ function Todostrip(props) {
                         Status
                     </label>
                     <select
-                        className={`px-2 py-1 rounded-lg focus:outline-none border shadow-sm ${
+                        className={`px-2 py-1 rounded-lg text-black focus:outline-none border shadow-sm ${
                             statusColors[props.Task.status]
                         }`}
                         name="status"
@@ -56,7 +57,7 @@ function Todostrip(props) {
                             props.status.map((item, index) => (
                                 <option
                                     key={`${index}`}
-                                    className={statusColors[item]}
+                                    className={`  ${statusColors[item]}`}
                                     value={item}
                                 >
                                     {item}

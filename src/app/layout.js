@@ -14,8 +14,9 @@ export default function RootLayout({ children }) {
         <html lang="en">
             <body className={inter.className}>
                 <div>{children}</div>
-
-                <Darkmodetoggle />
+                <div className="fixed bottom-0 dark:bg-transparent right-0 mx-3 my-4 z-50 px-12 ">
+                    <Darkmodetoggle />
+                </div>
             </body>
         </html>
     );

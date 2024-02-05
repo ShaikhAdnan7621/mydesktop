@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,7 +18,9 @@ function Search() {
     const [bookmarkList, setBookmarkList] = useState(() => {
         if (typeof window !== "undefined") {
             const storedBookmarks = localStorage.getItem("bookmarks");
-            return !storedBookmarks === "undefined" ? JSON.parse(storedBookmarks) : [];
+            return !storedBookmarks === "undefined"
+                ? JSON.parse(storedBookmarks)
+                : [];
         } else {
             return [];
         }
@@ -37,14 +40,14 @@ function Search() {
         "https://duckduckgo.com/": "/search_engines/DuckDuckGo.png",
         "https://www.ask.com/web": "/search_engines/Ask.png",
     };
-
+    
     const handleFormSubmit = (event) => {
         event.preventDefault();
         const bookmark = bookmarkList.find((b) => b.name === searchQuery);
         if (bookmark) {
-            window.location.href = bookmark.url;
+            window.open(bookmark.url, "_blank");
         } else {
-            window.location.href = `${searchEngine}?q=${searchQuery}`;
+            window.open(`${searchEngine}?q=${searchQuery}`, "_blank");
         }
     };
 
@@ -74,10 +77,10 @@ function Search() {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <datalist id="bookmark-suggestions">
+                        <datalist id="bookmark-suggestions" className=" bg-white dark:bg-black text-black dark:text-white">
                             {bookmarkList?.lenth > 0 &&
                                 bookmarkList.map((bookmark, index) => (
-                                    <option key={index} value={bookmark.name}>
+                                    <option className=" bg-white dark:bg-black text-black dark:text-white" key={index} value={bookmark.name}>
                                         {bookmark.name}
                                     </option>
                                 ))}

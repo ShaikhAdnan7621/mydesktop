@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import Todostrip from "./Todostrip";
 import Image from "next/image";

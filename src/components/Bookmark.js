@@ -41,6 +41,20 @@ export default function Bookmark() {
         setBookmarkURL("");
     };
 
+    const deleteBookmark = (index) => {
+        //dletebookmark
+        if (!confirm("Are you sure you want to delete this bookmark?")) {
+            return;
+        }
+        const bookmarklist =
+            JSON.parse(localStorage.getItem("bookmarks")) || [];
+        bookmarklist.splice(index, 1);
+        localStorage.setItem("bookmarks", JSON.stringify(bookmarklist));
+        setBookmarkList(bookmarklist);
+        if (bookmarklist.length === 0) {
+            setIsAddingBookmark(true);
+        }
+    };
     return (
         <div>
             <div className="max-w-7xl mx-auto px-5 dark:text-white text-black bg-white dark:bg-black">
@@ -62,13 +76,13 @@ export default function Bookmark() {
                                 onChange={(e) => {
                                     setBookmarkName(e.target.value);
                                 }}
-                                tabIndex={5}
+                                tabIndex={9}
                             />
                             <button
                                 className="w-9 h-9 border border-gray-600 rounded-full "
                                 onClick={addBookmark}
                                 name="addBookmark"
-                                tabIndex={7}
+                                tabIndex={11}
                             >
                                 ➕
                             </button>
@@ -78,7 +92,7 @@ export default function Bookmark() {
                             className="resize-none w-full bg-transparent mt-2 p-1 focus:outline-none"
                             placeholder="Bookmark URL"
                             value={bookmarkURL}
-                            tabIndex={6}
+                            tabIndex={10}
                             type="text"
                             onChange={(e) => {
                                 setBookmarkURL(e.target.value);
@@ -104,7 +118,10 @@ export default function Bookmark() {
                 </div>
                 <div className="mt-5 grid grid-cols-4 gap-2">
                     {bookmarkList.map((bookmark, index) => (
-                        <div key={index} className=" text-center shadow-lg rounded-md border ">
+                        <div
+                            key={index}
+                            className=" text-center shadow-lg rounded-md border p-2 relative"
+                        >
                             <Link
                                 href={bookmark.url}
                                 target="_blank"
@@ -113,10 +130,15 @@ export default function Bookmark() {
                                 <img
                                     src={`https://www.google.com/s2/favicons?domain=${bookmark.url}`}
                                     alt={bookmark.name}
-                                    className="w-10 h-10 mx-auto mb-2 mt-4"
+                                    className="w-10 h-10 mx-auto mb-2"
                                 />
-                                {bookmark.name}
+                                <span className="opacity-70 text-sm">
+                                    {bookmark.name}
+                                </span>
                             </Link>
+                            <div className="absolute top-0 right-0 px-2">
+                                <button onClick={deleteBookmark}>x</button>
+                            </div>
                         </div>
                     ))}
                 </div>

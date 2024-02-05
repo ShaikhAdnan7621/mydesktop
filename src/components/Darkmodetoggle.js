@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 
 function useDarkMode() {
@@ -30,7 +31,7 @@ export default function Darkmodetoggle() {
     const [isDarkMode, toggleDarkMode] = useDarkMode();
 
     return (
-        <div className="absolute right-0 top-4  w-14 box-content border rounded-full mr-4 p-1 duration-500 bg-white dark:bg-black">
+        <div className=" w-14 box-content border rounded-full p-0.5 duration-500 bg-white dark:bg-black border-black dark:border-white">
             <div className="flex w-7 h-7 dark:ml-auto duration-500">
                 <button
                     onClick={toggleDarkMode}

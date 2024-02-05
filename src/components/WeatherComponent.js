@@ -15,30 +15,50 @@ export default function WeatherComponent() {
         }
     }, []);
 
-    useEffect(() => {
-        fetchWeather();
-        fetchForecast();
-    }, [city]);
-
     const fetchWeather = async () => {
         try {
-            const response = await axios.get(
-                `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=a9cc850939787ac9c46f5ead0b833616&units=metric`
-            );
-            setWeatherData(response.data);
-            console.log(response);
-        } catch (error) {}
+            let weatherData = JSON.parse(localStorage.getItem("weatherData"));
+            let forecastData = JSON.parse(localStorage.getItem("forecastData"));
+            let dataTime = localStorage.getItem("dataTime");
+
+            let currentTime = new Date().getTime();
+            let timeDifference = (currentTime - dataTime) / (1000 * 60 * 60); // time difference in hours
+
+            if (!weatherData || !forecastData || timeDifference > 3) {
+                const setWeatherDataresponse = await axios.get(
+                    `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=a9cc850939787ac9c46f5ead0b833616&units=metric`
+                );
+                weatherData = setWeatherDataresponse.data;
+                console.log(setWeatherDataresponse);
+
+                const setForecastDataresponse = await axios.get(
+                    `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=a9cc850939787ac9c46f5ead0b833616&units=metric`
+                );
+                forecastData = setForecastDataresponse.data.list.slice(0, 20);
+                console.log(setForecastDataresponse);
+
+                // Store the fetched data and the current time in localStorage
+                localStorage.setItem(
+                    "weatherData",
+                    JSON.stringify(weatherData)
+                );
+                localStorage.setItem(
+                    "forecastData",
+                    JSON.stringify(forecastData)
+                );
+                localStorage.setItem("dataTime", currentTime.toString());
+            }
+
+            setWeatherData(weatherData);
+            setForecastData(forecastData);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    const fetchForecast = async () => {
-        try {
-            const response = await axios.get(
-                `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=a9cc850939787ac9c46f5ead0b833616&units=metric`
-            );
-            setForecastData(response.data.list.slice(0, 20));
-            console.log(response);
-        } catch (error) {}
-    };
+    useEffect(() => {
+        fetchWeather();
+    }, [city]);
 
     const getWeatherEmoji = (weather) => {
         if (weather.includes("Rain")) return "☔️";
@@ -77,9 +97,9 @@ export default function WeatherComponent() {
                 </div>
             </div>
 
-            <div className="border py-2 rounded-xl shadow-lg flex overflow-x-scroll mt-3 no-scrollbar snap-x">
-                {forecastData &&
-                    forecastData.map((data, index) => (
+            {forecastData && (
+                <div className="border py-2 rounded-xl shadow-lg flex overflow-x-scroll mt-3 no-scrollbar snap-x">
+                    {forecastData.map((data, index) => (
                         <div
                             key={index}
                             className="flex justify-around w-20 snap-center"
@@ -108,19 +128,19 @@ export default function WeatherComponent() {
                                             .toLocaleTimeString("en-US", {
                                                 hour12: true,
                                             })
-                                            .split(" ")[1] 
+                                            .split(" ")[1]
                                     }
                                 </p>
                             </div>
                         </div>
                     ))}
-            </div>
+                </div>
+            )}
             <div className="flex justify-end mt-2">
                 <button
                     className=""
                     onClick={() => {
                         fetchWeather();
-                        fetchForecast();
                     }}
                 >
                     Check
