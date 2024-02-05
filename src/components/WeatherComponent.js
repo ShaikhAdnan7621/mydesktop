@@ -4,22 +4,20 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 export default function WeatherComponent() {
-    const [city, setCity] = useState(
-        typeof localStorage !== "undefined"
-            ? localStorage.getItem("city") || "surat"
-            : "surat"
-    );
+    const [city, setCity] = useState("surat");
     const [weatherData, setWeatherData] = useState(null);
     const [forecastData, setForecastData] = useState(null);
 
     useEffect(() => {
-        if (typeof localStorage !== "undefined") {
-            localStorage.setItem("city", city);
+        const storedCity = localStorage.getItem("city");
+        if (storedCity) {
+            setCity(storedCity);
         }
-        if (city) {
-            fetchWeather();
-            fetchForecast();
-        }
+    }, []);
+
+    useEffect(() => {
+        fetchWeather();
+        fetchForecast();
     }, [city]);
 
     const fetchWeather = async () => {
@@ -28,7 +26,7 @@ export default function WeatherComponent() {
                 `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=a9cc850939787ac9c46f5ead0b833616&units=metric`
             );
             setWeatherData(response.data);
-            console.log(response.data);
+            console.log(response);
         } catch (error) {}
     };
 
@@ -38,7 +36,7 @@ export default function WeatherComponent() {
                 `http://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=a9cc850939787ac9c46f5ead0b833616&units=metric`
             );
             setForecastData(response.data.list.slice(0, 20));
-            console.log(response.data);
+            console.log(response);
         } catch (error) {}
     };
 
