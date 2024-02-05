@@ -49,29 +49,34 @@ export default function WeatherComponent() {
 
     return (
         <div className="bg-white dark:bg-black text-black dark:text-white ">
-            {weatherData && (
-                <div className="border p-3 rounded-xl shadow-lg">
-                    <div className="flex justify-between ">
-                        <div className="pl-3 py-2 ">
-                            <h1 className="text-4xl pb-2">
-                                {weatherData.main.temp}°C
-                            </h1>
-                            <p>
-                                <input
-                                    type="text"
-                                    value={city}
-                                    onChange={(e) => setCity(e.target.value)}
-                                    placeholder="City Name"
-                                    className="bg-white text-xl dark:bg-black text-black dark:text-white w-28 border-gray-300 dark:border-gray-600 text-center"
-                                />
-                            </p>
-                        </div>
-                        <div className="text-6xl">
-                            {getWeatherEmoji(weatherData.weather[0].main)}
-                        </div>
+            <div className="border p-3 rounded-xl shadow-lg">
+                <div className="flex justify-between ">
+                    <div className="pl-3 py-2 ">
+                        <h1 className="text-4xl pb-2">
+                            {weatherData && (
+                                <span>{weatherData.main.temp}°C</span>
+                            )}
+                        </h1>
+                        <p>
+                            <input
+                                type="text"
+                                value={city}
+                                onChange={(e) => setCity(e.target.value)}
+                                placeholder="City Name"
+                                className="bg-white text-xl dark:bg-black text-black dark:text-white w-28 border-gray-300 dark:border-gray-600 text-center"
+                            />
+                        </p>
+                    </div>
+                    <div className="text-6xl">
+                        {weatherData && (
+                            <span>
+                                {getWeatherEmoji(weatherData.weather[0].main)}
+                            </span>
+                        )}
                     </div>
                 </div>
-            )}
+            </div>
+
             <div className="border py-2 rounded-xl shadow-lg flex overflow-x-scroll mt-3 no-scrollbar snap-x">
                 {forecastData &&
                     forecastData.map((data, index) => (
@@ -103,7 +108,7 @@ export default function WeatherComponent() {
                                             .toLocaleTimeString("en-US", {
                                                 hour12: true,
                                             })
-                                            .split(" ")[1]
+                                            .split(" ")[1] 
                                     }
                                 </p>
                             </div>
