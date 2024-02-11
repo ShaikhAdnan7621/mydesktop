@@ -10,6 +10,7 @@ export default function WeatherComponent() {
 
     useEffect(() => {
         const storedCity = localStorage.getItem("city");
+        console.log(storedCity)
         if (storedCity) {
             setCity(storedCity);
         }
@@ -84,7 +85,8 @@ export default function WeatherComponent() {
                                 onChange={(e) => {
                                     setCity(e.target.value);
                                     //make date and time empty
-                                    localStorage.removeItem("weatherData");
+                                    localStorage.removeItem("dataTime");
+                                    localStorage.setItem("city", e.target.value);
                                 }}
                                 placeholder="City Name"
                                 className="bg-white text-xl dark:bg-black text-black dark:text-white w-28 border-gray-300 dark:border-gray-600 text-center"
