@@ -79,7 +79,7 @@ function Todo() {
         e.dataTransfer.setData("index", index);
     };
     return (
-        <div className="max-w-7xl mx-auto px-5  dark:text-white text-black">
+        <div className="max-w-7xl px-5  dark:text-white text-black mb-2 rounded-lg ">
             <h1 className={`text-2xl font-extrabold mt-5 `}>To Dos</h1>
             <div className="items-center">
                 <div

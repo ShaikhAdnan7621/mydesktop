@@ -116,7 +116,7 @@ export default function Bookmark() {
                         ⇓
                     </button>
                 </div>
-                <div className="mt-5 grid grid-cols-4 gap-2">
+                <div className="mt-5 grid grid-cols-4 gap-x-2 gap-y-3 mb-2">
                     {bookmarkList.map((bookmark, index) => (
                         <div
                             key={index}
@@ -142,6 +142,7 @@ export default function Bookmark() {
                         </div>
                     ))}
                 </div>
+                <hr className="border-gray-600 border-double flex-grow m-0 mb-2 " />
             </div>
         </div>
     );

@@ -6,7 +6,7 @@ import { useState } from "react";
 function Todostrip(props) {
     const [statusIs, setStatusIs] = useState(props.Task.status);
     const statusColors = {
-        "⌚Pending": "bg-yellow-300",
+        "⌚Pending": "bg-yellow-300 ",
         "🏃Inprogress": "bg-blue-300",
         "✔️Completed": "bg-green-300",
         "✖️Cancelled": "bg-red-300",
@@ -42,7 +42,7 @@ function Todostrip(props) {
                         Status
                     </label>
                     <select
-                        className={`px-2 py-1 rounded-lg text-black focus:outline-none border shadow-sm ${
+                        className={`px-2 py-1 rounded-lg text-black focus:outline-none border border-gray-800 dark:border-gray-300 shadow-sm text-sm ${
                             statusColors[props.Task.status]
                         }`}
                         name="status"

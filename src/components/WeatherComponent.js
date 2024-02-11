@@ -81,7 +81,11 @@ export default function WeatherComponent() {
                             <input
                                 type="text"
                                 value={city}
-                                onChange={(e) => setCity(e.target.value)}
+                                onChange={(e) => {
+                                    setCity(e.target.value);
+                                    //make date and time empty
+                                    localStorage.removeItem("weatherData");
+                                }}
                                 placeholder="City Name"
                                 className="bg-white text-xl dark:bg-black text-black dark:text-white w-28 border-gray-300 dark:border-gray-600 text-center"
                             />
