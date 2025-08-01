@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
+import { createPortal } from "react-dom";
 import { Search as SearchIcon, ChevronDown } from "lucide-react";
 
 const searchEngines = [
@@ -11,11 +12,13 @@ const searchEngines = [
     { name: "Ask", url: "https://www.ask.com/web?q=", icon: "/search_engines/Ask.png" }
 ];
 
-export default function Search() {
+const Search = forwardRef(function Search(props, ref) {
     const [query, setQuery] = useState("");
     const [isFocused, setIsFocused] = useState(false);
     const [selectedEngine, setSelectedEngine] = useState(0);
     const [showEngines, setShowEngines] = useState(false);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
+    const buttonRef = useRef(null);
 
     useEffect(() => {
         const saved = localStorage.getItem("selectedSearchEngine");
@@ -36,7 +39,7 @@ export default function Search() {
     };
 
     return (
-        <form onSubmit={handleSearch} className="w-full">
+        <form onSubmit={handleSearch} className="w-full relative z-50">
             <div className={`relative transition-all duration-300 ${
                 isFocused ? 'transform scale-105' : ''
             }`}>
@@ -45,6 +48,7 @@ export default function Search() {
                 </div>
                 
                 <input
+                    ref={ref}
                     type="text"
                     placeholder={`Search with ${searchEngines[selectedEngine].name}...`}
                     value={query}
@@ -58,16 +62,32 @@ export default function Search() {
                 <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
                     <div className="relative">
                         <button
+                            ref={buttonRef}
                             type="button"
-                            onClick={() => setShowEngines(!showEngines)}
+                            onClick={() => {
+                                if (!showEngines && buttonRef.current) {
+                                    const rect = buttonRef.current.getBoundingClientRect();
+                                    setDropdownPosition({
+                                        top: rect.bottom + 8,
+                                        right: window.innerWidth - rect.right
+                                    });
+                                }
+                                setShowEngines(!showEngines);
+                            }}
                             className="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         >
                             <img src={searchEngines[selectedEngine].icon} alt={searchEngines[selectedEngine].name} className="w-5 h-5" />
                             <ChevronDown className="w-4 h-4 text-gray-500" />
                         </button>
                         
-                        {showEngines && (
-                            <div className="absolute top-full w-52 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 z-50">
+                        {showEngines && typeof window !== 'undefined' && createPortal(
+                            <div 
+                                className="fixed w-52 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 py-2 z-[9999]"
+                                style={{
+                                    top: `${dropdownPosition.top}px`,
+                                    right: `${dropdownPosition.right}px`
+                                }}
+                            >
                                 {searchEngines.map((engine, index) => (
                                     <button
                                         key={index}
@@ -81,11 +101,14 @@ export default function Search() {
                                         <span className="text-gray-700 dark:text-gray-200">{engine.name}</span>
                                     </button>
                                 ))}
-                            </div>
+                            </div>,
+                            document.body
                         )}
                     </div>
                 </div>
             </div>
         </form>
     );
-}
+});
+
+export default Search;

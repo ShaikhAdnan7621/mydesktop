@@ -39,7 +39,7 @@ export default function Bookmark() {
     };
 
     return (
-        <div>
+        <div className="z-0"> 
             <div className="flex items-center justify-between mb-8">
                 <h2 className="text-xl font-light text-gray-700 dark:text-gray-200">Quick Access</h2>
                 <button
@@ -89,7 +89,7 @@ export default function Bookmark() {
                 {bookmarkList.map((bookmark, index) => (
                     <div key={index} className="group relative">
                         <button
-                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center hover:bg-red-600 z-10"
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center hover:bg-red-600  "
                             onClick={() => deleteBookmark(index)}
                         >
                             <X className="w-3 h-3" />

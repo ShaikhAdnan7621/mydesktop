@@ -11,6 +11,7 @@ import DarkModeToggle from "@/components/Darkmodetoggle";
 
 export default function Home() {
     const bgRef = useRef(null);
+    const searchRef = useRef(null);
     const [showContent, setShowContent] = useState(false);
 
     useEffect(() => {
@@ -40,6 +41,20 @@ export default function Home() {
         return () => window.removeEventListener('mousemove', handleMouseMove);
     }, []);
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.ctrlKey && e.key === 'l') {
+                e.preventDefault();
+                if (searchRef.current) {
+                    searchRef.current.focus();
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
     return (
         <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-slate-900 dark:to-black transition-colors duration-75 flex flex-col relative overflow-hidden">
             {/* Interactive Background */}
@@ -52,7 +67,7 @@ export default function Home() {
                 <div className="absolute bottom-20 left-20 w-64 h-64 bg-purple-400/5 rounded-full blur-2xl"></div>
             </div>
             {/* Dark Mode Toggle */}
-            <div className="absolute top-6 right-6 z-10">
+            <div className="absolute top-6 right-6 z-100">
                 <DarkModeToggle />
             </div>
 
@@ -69,7 +84,7 @@ export default function Home() {
 
                         {/* Search Section */}
                         <div className="w-full max-w-2xl mb-12 animate-fade-in" style={{animationDelay: '0.2s'}}>
-                            <Search />
+                            <Search ref={searchRef} />
                         </div>
 
                         {/* Main Widgets Grid */}
