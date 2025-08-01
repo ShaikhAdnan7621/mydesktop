@@ -1,38 +1,75 @@
 "use client";
+import { useEffect, useState } from "react";
 
-import { useState, useEffect } from "react";
-
-const Clock = () => {
-    const [date, setDate] = useState(null);
+export default function Clock() {
+    const [time, setTime] = useState(null);
+    const [prevTime, setPrevTime] = useState(null);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setDate(new Date());
-        const timer = setInterval(() => setDate(new Date()), 1000);
-        return () => {
-            clearInterval(timer);
-        };
+        setMounted(true);
+        const now = new Date();
+        setTime(now);
+        setPrevTime(now);
+        
+        const interval = setInterval(() => {
+            setPrevTime(prev => prev || new Date());
+            setTime(new Date());
+        }, 1000);
+        return () => clearInterval(interval);
     }, []);
 
-    if (date === null) {
-        return null;
-    }
+    if (!mounted || !time) return null;
+
+    const formatTime = (date) => {
+        return date.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        }).split(':');
+    };
+
+    const [hours, minutes, seconds] = formatTime(time);
+    const [prevHours, prevMinutes, prevSeconds] = prevTime ? formatTime(prevTime) : ['--', '--', '--'];
+
+    const dateString = time.toLocaleDateString(undefined, {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+    });
+
+    const greeting = () => {
+        const hour = time.getHours();
+        if (hour < 12) return "Good morning";
+        if (hour < 18) return "Good afternoon";
+        return "Good evening";
+    };
+
+    const DigitBox = ({ digit, prevDigit, isChanging }) => (
+        <span className={`inline-block transition-all duration-300 ${
+            isChanging ? 'animate-pulse scale-110' : ''
+        }`}>
+            {digit}
+        </span>
+    );
 
     return (
-        <div className="text-black dark:text-white w-full">
-            <div className="border-l-4 border-red-500 pl-8  py-12">
-                <h2 className="text-3xl drop-shadow-lg ">
-                    {date.toLocaleDateString("en-IN", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                    })}
+        <div className="text-center">
+            <div className="mb-4">
+                <h2 className="text-2xl md:text-3xl font-light text-gray-600 dark:text-gray-300 mb-2 transition-opacity duration-500" suppressHydrationWarning>
+                    {greeting()}
                 </h2>
-                <h1 className="text-7xl drop-shadow-lg mt-2">
-                    {date.toLocaleTimeString("en-US", { hour12: false })}
-                </h1>
+                <div className="text-6xl md:text-8xl font-extralight text-gray-800 dark:text-white tracking-tight font-mono">
+                    <DigitBox digit={hours} prevDigit={prevHours} isChanging={hours !== prevHours} />
+                    <span className="animate-pulse">:</span>
+                    <DigitBox digit={minutes} prevDigit={prevMinutes} isChanging={minutes !== prevMinutes} />
+                    <span className="animate-pulse">:</span>
+                    <DigitBox digit={seconds} prevDigit={prevSeconds} isChanging={seconds !== prevSeconds} />
+                </div>
             </div>
+            <p className="text-lg md:text-xl text-gray-500 dark:text-gray-400 font-light transition-opacity duration-500" suppressHydrationWarning>
+                {dateString}
+            </p>
         </div>
     );
-};
-
-export default Clock;
+}

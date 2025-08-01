@@ -1,7 +1,7 @@
 "use client";
-
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Plus, X } from 'lucide-react';
 
 export default function Bookmark() {
     const [isAddingBookmark, setIsAddingBookmark] = useState(false);
@@ -10,139 +10,115 @@ export default function Bookmark() {
     const [bookmarkList, setBookmarkList] = useState([]);
 
     useEffect(() => {
-        const bookmarklist =
-            JSON.parse(localStorage.getItem("bookmarks")) || [];
-        if (bookmarklist.length === 0) {
-            setIsAddingBookmark(true);
-        }
+        const bookmarklist = JSON.parse(localStorage.getItem("bookmarks")) || [
+            { name: "YouTube", url: "https://youtube.com" },
+            { name: "GitHub", url: "https://github.com" },
+            { name: "Gmail", url: "https://gmail.com" },
+            { name: "Twitter", url: "https://twitter.com" },
+            { name: "Reddit", url: "https://reddit.com" },
+            { name: "Netflix", url: "https://netflix.com" }
+        ];
         setBookmarkList(bookmarklist);
     }, []);
 
     const addBookmark = () => {
-        if (bookmarkName === "") {
-            alert("Please Enter bookmark Name");
-            return;
-        }
-        if (bookmarkURL === "") {
-            alert("Please Enter bookmarkURL");
-            return;
-        }
-        const bookmarkelist =
-            JSON.parse(localStorage.getItem("bookmarks")) || [];
-
-        bookmarkelist.unshift({
-            name: bookmarkName,
-            url: bookmarkURL,
-        });
-
-        localStorage.setItem("bookmarks", JSON.stringify(bookmarkelist));
-        setBookmarkList(bookmarkelist);
+        if (!bookmarkName || !bookmarkURL) return;
+        const updated = [...bookmarkList, { name: bookmarkName, url: bookmarkURL }];
+        localStorage.setItem("bookmarks", JSON.stringify(updated));
+        setBookmarkList(updated);
         setBookmarkName("");
         setBookmarkURL("");
+        setIsAddingBookmark(false);
     };
 
     const deleteBookmark = (index) => {
-        //dletebookmark
-        if (!confirm("Are you sure you want to delete this bookmark?")) {
-            return;
-        }
-        const bookmarklist =
-            JSON.parse(localStorage.getItem("bookmarks")) || [];
-        bookmarklist.splice(index, 1);
-        localStorage.setItem("bookmarks", JSON.stringify(bookmarklist));
-        setBookmarkList(bookmarklist);
-        if (bookmarklist.length === 0) {
-            setIsAddingBookmark(true);
-        }
+        const updated = [...bookmarkList];
+        updated.splice(index, 1);
+        localStorage.setItem("bookmarks", JSON.stringify(updated));
+        setBookmarkList(updated);
     };
+
     return (
         <div>
-            <div className="max-w-7xl mx-auto px-5 dark:text-white text-black bg-white dark:bg-black">
-                <h1 className="text-2xl font-extrabold mt-5">Bookmarks</h1>
-                <div className="items-center">
-                    <div
-                        className={`bg-gray-100 dark:bg-gray-800 shadow-lg w-full duration-500 px-3 rounded-lg ease-out ${
-                            !isAddingBookmark
-                                ? " h-0 overflow-hidden m-0 py-0 "
-                                : "  mt-5 p-3"
-                        }`}
-                    >
-                        <div className="flex h-9 items-center">
-                            <input
-                                type="text"
-                                className="p-1 min-w-0 flex-grow bg-transparent focus:outline-none pr-5 "
-                                placeholder="Bookmark Name"
-                                value={bookmarkName}
-                                onChange={(e) => {
-                                    setBookmarkName(e.target.value);
-                                }}
-                                tabIndex={9}
-                            />
-                            <button
-                                className="w-9 h-9 border border-gray-600 rounded-full "
-                                onClick={addBookmark}
-                                name="addBookmark"
-                                tabIndex={11}
+            <div className="flex items-center justify-between mb-8">
+                <h2 className="text-xl font-light text-gray-700 dark:text-gray-200">Quick Access</h2>
+                <button
+                    onClick={() => setIsAddingBookmark(!isAddingBookmark)}
+                    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 hover:scale-110"
+                >
+                    <Plus className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                </button>
+            </div>
+
+            {isAddingBookmark && (
+                <div className="mb-8 p-6 bg-gray-50/80 dark:bg-gray-700/50 backdrop-blur-sm rounded-2xl border border-gray-200/50 dark:border-gray-600/50">
+                    <div className="space-y-4">
+                        <input
+                            type="text"
+                            placeholder="Site name"
+                            value={bookmarkName}
+                            onChange={(e) => setBookmarkName(e.target.value)}
+                            className="w-full px-4 py-3 rounded-xl bg-white dark:bg-gray-800 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500/30 text-gray-800 dark:text-white placeholder-gray-400"
+                        />
+                        <input
+                            type="text"
+                            placeholder="https://example.com"
+                            value={bookmarkURL}
+                            onChange={(e) => setBookmarkURL(e.target.value)}
+                            className="w-full px-4 py-3 rounded-xl bg-white dark:bg-gray-800 border-0 focus:outline-none focus:ring-2 focus:ring-blue-500/30 text-gray-800 dark:text-white placeholder-gray-400"
+                        />
+                        <div className="flex gap-3">
+                            <button 
+                                onClick={addBookmark} 
+                                className="px-6 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-200 font-medium"
                             >
-                                ➕
+                                Add
+                            </button>
+                            <button 
+                                onClick={() => setIsAddingBookmark(false)} 
+                                className="px-6 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-200 font-medium"
+                            >
+                                Cancel
                             </button>
                         </div>
-                        <hr className="shadow-sm border-gray-300 my-1" />
-                        <input
-                            className="resize-none w-full bg-transparent mt-2 p-1 focus:outline-none"
-                            placeholder="Bookmark URL"
-                            value={bookmarkURL}
-                            tabIndex={10}
-                            type="text"
-                            onChange={(e) => {
-                                setBookmarkURL(e.target.value);
-                            }}
-                        />
                     </div>
                 </div>
-                <div className="mt-2 flex items-center">
-                    <hr className="border-gray-600 border-double flex-grow m-0" />
-                    <button
-                        className={`border-2 border-gray-600 rotate-0 group focus:outline-none text-2xl rounded-full h-9 w-9 relative px-2 hover:pt-1  duration-500 ease-in-out active:rotate-180 delay-100 ${
-                            isAddingBookmark
-                                ? " wait rotate-180 "
-                                : " rotate-0 "
-                        }`}
-                        name="toggleBookmarkAdder"
-                        onClick={() => {
-                            setIsAddingBookmark(!isAddingBookmark);
-                        }}
-                    >
-                        ⇓
-                    </button>
-                </div>
-                <div className="mt-5 grid grid-cols-4 gap-x-2 gap-y-3 mb-2">
-                    {bookmarkList.map((bookmark, index) => (
-                        <div
-                            key={index}
-                            className=" text-center shadow-lg rounded-md border p-2 relative"
+            )}
+
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6">
+                {bookmarkList.map((bookmark, index) => (
+                    <div key={index} className="group relative">
+                        <button
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center hover:bg-red-600 z-10"
+                            onClick={() => deleteBookmark(index)}
                         >
-                            <Link
-                                href={bookmark.url}
-                                target="_blank"
-                                className=" relative "
-                            >
+                            <X className="w-3 h-3" />
+                        </button>
+                        <Link 
+                            href={bookmark.url} 
+                            target="_blank" 
+                            className="flex flex-col items-center p-4 rounded-2xl hover:bg-gray-100/50 dark:hover:bg-gray-700/30 transition-all duration-200 hover:scale-105"
+                        >
+                            <div className="w-12 h-12 mb-3 rounded-xl bg-white dark:bg-gray-700 shadow-md flex items-center justify-center overflow-hidden">
                                 <img
-                                    src={`https://www.google.com/s2/favicons?domain=${bookmark.url}`}
+                                    src={`https://www.google.com/s2/favicons?domain=${bookmark.url}&sz=32`}
                                     alt={bookmark.name}
-                                    className="w-10 h-10 mx-auto mb-2"
+                                    className="w-8 h-8"
+                                    onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        e.target.nextSibling.style.display = 'block';
+                                    }}
                                 />
-                                <span className="opacity-70 text-sm">
-                                    {bookmark.name}
-                                </span>
-                            </Link>
-                            <div className="absolute top-0 right-0 px-2">
-                                <button onClick={deleteBookmark}>x</button>
+                                <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg hidden items-center justify-center text-white font-bold text-sm">
+                                    {bookmark.name.charAt(0).toUpperCase()}
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-                <hr className="border-gray-600 border-double flex-grow m-0 mb-2 " />
+                            <span className="text-sm text-gray-600 dark:text-gray-300 font-medium truncate w-full text-center">
+                                {bookmark.name}
+                            </span>
+                        </Link>
+                    </div>
+                ))}
             </div>
         </div>
     );

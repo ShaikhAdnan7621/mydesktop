@@ -1,85 +1,62 @@
-"use client";
-
-import React from "react";
-import { useState } from "react";
+"use client"
+import { useState } from "react"
+import { Trash2, Clock, Play, CheckCircle2, X } from "lucide-react"
 
 function Todostrip(props) {
-    const [statusIs, setStatusIs] = useState(props.Task.status);
-    const statusColors = {
-        "⌚Pending": "bg-yellow-300 ",
-        "🏃Inprogress": "bg-blue-300",
-        "✔️Completed": "bg-green-300",
-        "✖️Cancelled": "bg-red-300",
-    };
+  const [statusIs, setStatusIs] = useState(props.Task.status)
 
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return `${date.toLocaleDateString()} \n ${date.toLocaleTimeString()}`;
-    };
+  const statusConfig = {
+    "⌚Pending": { icon: Clock, color: "text-yellow-500", bg: "bg-yellow-100 dark:bg-yellow-900/30" },
+    "🏃Inprogress": { icon: Play, color: "text-blue-500", bg: "bg-blue-100 dark:bg-blue-900/30" },
+    "✔️Completed": { icon: CheckCircle2, color: "text-green-500", bg: "bg-green-100 dark:bg-green-900/30" },
+    "✖️Cancelled": { icon: X, color: "text-red-500", bg: "bg-red-100 dark:bg-red-900/30" },
+  }
 
-    return (
-        <div className="text-black  dark:text-white  ">
-            <div className=" relative ">
-                <button
-                    className="absolute top-0 right-0 p-0.5 w-9 h-9 border  rounded-full border-gray-800  dark:border-gray-100 text-xl bg-gray-100 dark:bg-gray-800"
-                    onClick={() => props.deletetask(props.index)}
-                    name="deleteTodoButton"
-                >
-                    🗑️
-                </button>
-                <div className="p-0.5 sm:pr-12">
-                    <h1 className="font-bold px-2 pr-12  sm:pr-2">
-                        {props.Task.title}
-                    </h1>
-                    <p className="px-2 text-gray-700 mt-2">
-                        {props.Task.description}
-                    </p>
-                </div>
-                <hr className="shadow-sm border-gray-300 mt-3 mb-4" />
+  const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  }
 
-                <div className=" flex items-center justify-between mt-5 sm:mt-0 mb-2">
-                    <label htmlFor="status" className="ml-4">
-                        Status
-                    </label>
-                    <select
-                        className={`px-2 py-1 rounded-lg text-black focus:outline-none border border-gray-800 dark:border-gray-300 shadow-sm text-sm ${
-                            statusColors[props.Task.status]
-                        }`}
-                        name="status"
-                        id="status"
-                        value={statusIs}
-                        onChange={(e) => {
-                            props.updatestatus(props.index, e.target.value);
-                            setStatusIs(e.target.value);
-                        }}
-                    >
-                        {props.status.length &&
-                            props.status.map((item, index) => (
-                                <option
-                                    key={`${index}`}
-                                    className={`  ${statusColors[item]}`}
-                                    value={item}
-                                >
-                                    {item}
-                                </option>
-                            ))}
-                    </select>
-                </div>
+  const currentStatus = statusConfig[statusIs] || statusConfig["⌚Pending"]
+  const StatusIcon = currentStatus.icon
 
-                <div className=" px-2 text-gray-700 text-xs mt-3 flex justify-between gap-3">
-                    <p className="text-left underline">
-                        Assign: <span>{formatDate(props.Task.created_at)}</span>
-                    </p>
-                    <p className="text-right underline">
-                        Updated:{" "}
-                        <span className="">
-                            {formatDate(props.Task.updated_at)}
-                        </span>
-                    </p>
-                </div>
-            </div>
+  return (
+    <div className="p-4">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex-1 pr-4">
+          <h3 className="font-semibold text-gray-800 dark:text-white mb-1">{props.Task.title}</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{props.Task.description}</p>
         </div>
-    );
+        <button
+          className="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200 group"
+          onClick={() => props.deletetask(props.index)}
+        >
+          <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-red-500" />
+        </button>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <StatusIcon className={`w-4 h-4 ${currentStatus.color}`} />
+          <select
+            className={`px-3 py-1 rounded-full text-xs font-medium border-0 focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${currentStatus.bg} ${currentStatus.color}`}
+            value={statusIs}
+            onChange={(e) => {
+              props.updatestatus(props.index, e.target.value)
+              setStatusIs(e.target.value)
+            }}
+          >
+            {props.status.map((item, index) => (
+              <option key={index} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="text-xs text-gray-400">{formatDate(props.Task.updated_at)}</div>
+      </div>
+    </div>
+  )
 }
 
-export default Todostrip;
+export default Todostrip

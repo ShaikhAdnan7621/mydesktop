@@ -1,210 +1,141 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Plus, CheckCircle2, Clock, Play, X } from 'lucide-react';
 import Todostrip from "./Todostrip";
-import Image from "next/image";
 
 function Todo() {
-    const [Addingtodo, setAddingtodo] = useState(false);
-    const [TodoTitle, SetTodoTitle] = useState("");
-    const [TodoDescription, SetTodoDescription] = useState("");
-    const [firstloading, setfirstloading] = useState(true);
-    const [todoarr, settodoarr] = useState([]);
-    const status = ["⌚Pending", "🏃Inprogress", "✔️Completed", "✖️Cancelled"];
+    const [adding, setAdding] = useState(false);
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [todos, setTodos] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const statusOptions = [
+        { label: "Pending", value: "⌚Pending", icon: Clock, color: "text-yellow-500" },
+        { label: "In Progress", value: "🏃Inprogress", icon: Play, color: "text-blue-500" },
+        { label: "Completed", value: "✔️Completed", icon: CheckCircle2, color: "text-green-500" },
+        { label: "Cancelled", value: "✖️Cancelled", icon: X, color: "text-red-500" }
+    ];
 
     useEffect(() => {
-        setfirstloading(true);
-        const todoarr = JSON.parse(localStorage.getItem("todoarr")) || [];
-        if (todoarr.length === 0) {
-            setAddingtodo(true);
-        }
-        settodoarr(todoarr);
-        setfirstloading(false);
+        const stored = JSON.parse(localStorage.getItem("todoarr")) || [];
+        if (stored.length === 0) setAdding(true);
+        setTodos(stored);
+        setLoading(false);
     }, []);
 
-    const appendtodoarr = () => {
-        if (TodoTitle === "") {
-            alert("Please Enter Task Title");
-            return;
-        }
-        if (TodoDescription === "") {
-            alert("Please Enter Task Description");
-            return;
-        }
-        const todoarr = JSON.parse(localStorage.getItem("todoarr")) || [];
-
-        todoarr.unshift({
-            title: TodoTitle,
-            description: TodoDescription,
-            status: status[0],
-            created_at: new Date(),
-            updated_at: new Date(),
-        });
-
-        localStorage.setItem("todoarr", JSON.stringify(todoarr));
-        settodoarr(todoarr);
-        SetTodoTitle("");
-        SetTodoDescription("");
-        console.log(todoarr);
-    };
-
-    const updatestatus = (index, statuss) => {
-        const todoarr = JSON.parse(localStorage.getItem("todoarr")) || [];
-        todoarr[index].status = statuss;
-        todoarr[index].updated_at = new Date();
-        localStorage.setItem("todoarr", JSON.stringify(todoarr));
-        settodoarr(todoarr);
-    };
-
-    //deletetask
-    const deletetask = (index) => {
-        if (confirm("Are you sure you want to delete this task?")) {
-            const todoarr = JSON.parse(localStorage.getItem("todoarr")) || [];
-            todoarr.splice(index, 1);
-            localStorage.setItem("todoarr", JSON.stringify(todoarr));
-            settodoarr(todoarr);
-        }
-    };
-    const onDrop = (e, index) => {
-        const draggedIndex = Number(e.dataTransfer.getData("index"));
-        const newTodos = [...todoarr];
-        const draggedItem = newTodos[draggedIndex];
-        newTodos.splice(draggedIndex, 1); // remove the dragged item from its original position
-        newTodos.splice(index, 0, draggedItem); // insert the dragged item at the new position
-        settodoarr(newTodos);
+    const saveTodos = (newTodos) => {
         localStorage.setItem("todoarr", JSON.stringify(newTodos));
+        setTodos(newTodos);
     };
 
-    const onDragStart = (e, index) => {
-        e.dataTransfer.setData("index", index);
+    const addTodo = () => {
+        if (!title || !description) return alert("Enter title and description");
+        const newTodos = [
+            {
+                title,
+                description,
+                status: statusOptions[0].value,
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+            ...todos,
+        ];
+        saveTodos(newTodos);
+        setTitle("");
+        setDescription("");
+        setAdding(false);
     };
+
+    const updateStatus = (index, newStatus) => {
+        const updated = [...todos];
+        updated[index].status = newStatus;
+        updated[index].updated_at = new Date();
+        saveTodos(updated);
+    };
+
+    const deleteTask = (index) => {
+        if (!confirm("Delete this task?")) return;
+        const updated = [...todos];
+        updated.splice(index, 1);
+        saveTodos(updated);
+    };
+
     return (
-        <div className="max-w-7xl px-5  dark:text-white text-black mb-2 rounded-lg ">
-            <h1 className={`text-2xl font-extrabold mt-5 `}>To Dos</h1>
-            <div className="items-center">
-                <div
-                    className={`bg-gray-100 dark:bg-gray-800 shadow-lg w-full duration-500 px-3 rounded-lg ease-out ${
-                        !Addingtodo
-                            ? " h-0 overflow-hidden m-0 py-0 "
-                            : " h-28 mt-5 p-3"
-                    }`}
-                >
-                    <div className="flex h-9 items-center">
-                        <input
-                            type="text"
-                            className="p-1 min-w-0 flex-grow bg-transparent focus:outline-none pr-5 "
-                            placeholder="Todo Tittle"
-                            value={TodoTitle}
-                            onChange={(e) => {
-                                SetTodoTitle(e.target.value);
-                            }}
-                            tabIndex={5}
-                        />
-                        <button
-                            className="w-9 h-9 border border-gray-600 rounded-full "
-                            onClick={() => appendtodoarr()}
-                            name="addtodo"
-                            tabIndex={7}
-                        >
-                            ➕
-                        </button>
-                    </div>
-                    <hr className="shadow-sm border-gray-300 my-1" />
-                    <input
-                        className="resize-none w-full bg-transparent mt-2 p-1 focus:outline-none"
-                        placeholder="Todo description"
-                        value={TodoDescription}
-                        tabIndex={6}
-                        type="text"
-                        onChange={(e) => {
-                            SetTodoDescription(e.target.value);
-                        }}
-                    />
+        <div>
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                    <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Tasks</h2>
                 </div>
-            </div>
-            <div className="mt-2 flex items-center">
-                <hr className="border-gray-600 border-double flex-grow m-0" />
                 <button
-                    className={`border-2 border-gray-600 rotate-0 group focus:outline-none text-2xl rounded-full h-9 w-9 relative px-2 hover:pt-1  duration-500 ease-in-out active:rotate-180 delay-100 ${
-                        Addingtodo ? " wait rotate-180 " : " rotate-0 "
-                    }`}
-                    name="Addingtododroer"
-                    onClick={() => {
-                        Addingtodo ? setAddingtodo(false) : setAddingtodo(true);
-                    }}
+                    onClick={() => setAdding(!adding)}
+                    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
                 >
-                    ⇓
+                    <Plus className="w-4 h-4 text-gray-600 dark:text-gray-300" />
                 </button>
             </div>
 
-            <div className="mb-2">
-                {firstloading ? (
-                    <h1 className=" text-center">Loading...</h1>
-                ) : (
-                    <div className="" onDragOver={(e) => e.preventDefault()}>
-                        {todoarr.length > 0 ? (
-                            <>
-                                <div className="flex items-center my-2 ">
-                                    <hr className="border-gray-400 border-2 rounded-full flex-grow " />
-                                    <h1 className="text-xl font-bold mx-3">
-                                        Task
-                                    </h1>
-                                    <hr className="border-gray-400 border-2 rounded-full flex-grow " />
-                                </div>
-                                <div>
-                                    {todoarr.map((item, index) => (
-                                        <div
-                                            className="mt-4 flex w-full p-3 border  rounded-lg shadow-lg"
-                                            key={index}
-                                            draggable
-                                            onDragStart={(e) =>
-                                                onDragStart(e, index)
-                                            }
-                                            onDrop={(e) => onDrop(e, index)}
-                                            onDragOver={(e) =>
-                                                e.preventDefault()
-                                            }
-                                        >
-                                            {todoarr.length > 1 && (
-                                                <div className="w-8 ">
-                                                    <Image
-                                                        src={
-                                                            index === 0
-                                                                ? "/downarrow.svg"
-                                                                : index ===
-                                                                  todoarr.length -
-                                                                      1
-                                                                ? "/uparrow.svg"
-                                                                : "/updownarrow.svg"
-                                                        }
-                                                        alt="updownarrow"
-                                                        width={30}
-                                                        height={30}
-                                                    />
-                                                </div>
-                                            )}
-                                            <div className="flex-grow">
-                                                <Todostrip
-                                                    Task={item}
-                                                    index={index}
-                                                    status={status}
-                                                    updatestatus={updatestatus}
-                                                    deletetask={deletetask}
-                                                />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </>
-                        ) : (
-                            <p className=" text-center text-xl">
-                                All Task Dsone
-                            </p>
-                        )}
+            {adding && (
+                <div className="space-y-3 mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                    <input
+                        type="text"
+                        placeholder="Task title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-gray-800 dark:text-white"
+                    />
+                    <textarea
+                        placeholder="Task description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        rows={3}
+                        className="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-gray-800 dark:text-white resize-none"
+                    />
+                    <div className="flex space-x-2">
+                        <button 
+                            onClick={addTodo} 
+                            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 text-sm font-medium"
+                        >
+                            Add Task
+                        </button>
+                        <button 
+                            onClick={() => setAdding(false)} 
+                            className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors duration-200 text-sm font-medium"
+                        >
+                            Cancel
+                        </button>
                     </div>
-                )}
-            </div>
-            <hr className="border-gray-600 border-double flex-grow m-0" />
+                </div>
+            )}
+
+            {loading ? (
+                <div className="flex justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                </div>
+            ) : todos.length === 0 ? (
+                <div className="text-center py-8">
+                    <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-2" />
+                    <p className="text-gray-500 dark:text-gray-400">All tasks completed! ✨</p>
+                </div>
+            ) : (
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {todos.map((task, index) => (
+                        <div
+                            key={index}
+                            className="bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-all duration-200"
+                        >
+                            <Todostrip
+                                Task={task}
+                                index={index}
+                                status={statusOptions}
+                                updatestatus={updateStatus}
+                                deletetask={deleteTask}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
